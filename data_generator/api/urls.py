@@ -3,6 +3,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name="home"),
     path('generate-json/', views.generate_json_data, name='generate_json_data'),
+    path('health/', views.health_check, name='health-check'),
     
 ]
 
