@@ -63,3 +63,12 @@ def generate_json_data(request):
             return HttpResponseBadRequest("Invalid JSON format")
     else:
         return HttpResponseBadRequest("Invalid request method")
+
+
+
+
+
+def health_check(request):
+    return JsonResponse({
+        "status": "ok"
+    })
