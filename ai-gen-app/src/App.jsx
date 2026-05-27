@@ -6,24 +6,38 @@ import { Data } from './components/data'
 
 function App() {
   return (
-    <>
-      <div className="d-flex flex-column align-items-center ">
+    <div className="container-fluid min-vh-100 d-flex flex-column align-items-center">
+      {/* HEADER */}
+      <div className="text-center mt-5">
         <img
-          className="img-fluid w-25 mt-5 mb-4"
+          className="img-fluid mb-3"
+          style={{ maxWidth: '220px' }}
           src={aigenImage}
           alt="Try our AiGen"
         />
-        <p className="initial-text fs-5">Design Your Data, Powered by AI</p>
-        <div className="main-content w-75 border rounded row">
-          <div className="col-6">
-            <Form />
+
+        <p className="fs-5 text-light">Design Your Data, Powered by AI</p>
+      </div>
+
+      {/* MAIN */}
+      <div className="container mt-3">
+        <div className="row g-3">
+          {/* FORM */}
+          <div className="col-12 col-lg-6">
+            <div className="bg-dark rounded p-3 h-100">
+              <Form />
+            </div>
           </div>
-          <div className="col">
-            <Data />
+
+          {/* DATA */}
+          <div className="col-12 col-lg-6">
+            <div className="bg-dark rounded p-3 h-100">
+              <Data />
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
