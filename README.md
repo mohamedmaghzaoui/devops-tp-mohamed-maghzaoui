@@ -21,18 +21,52 @@ Generate complex JSON and YAML mock data structures powered by AI — in seconds
 
 ## Lancer le projet
 
-**Backend**
+### Backend
 ```bash
 git clone https://github.com/mohamedmaghzaoui/AIGen.git
 cd AIGen/data_generator
-
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
 ```
+1. Create a virtual environment:
+
+   ```bash
+   python -m venv .venv
+   ```
+
+1. Activate the virtual environment:
+
+   - **Linux/macOS:**
+
+     ```bash
+     source .venv/bin/activate
+     ```
+
+   - **Windows (PowerShell / Command Prompt):**
+
+     ```bash
+     .venv\Scripts\activate
+     ```
+
+1. Install dependencies:
+
+   ```bash
+     pip install -r requirements.txt
+   ```
+
+1. Apply database migrations:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+1. Run the Django development server:
+
+   ```bash
+   python manage.py runserver
+   ```
+
 API accessible at `http://localhost:8000/`
 
-**Frontend**
+### Frontend
 ```bash
 cd ai-gen-app
 npm install
