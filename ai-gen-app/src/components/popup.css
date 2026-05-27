@@ -1,0 +1,123 @@
+/* Overlay: Dark backdrop with smooth fade effect */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
+}
+
+/* Popup Content: Modern dark container */
+.content {
+  background-image: url('../assets/image-color.png');
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
+  width: 400px; /* Fixed width */
+  animation: slideIn 0.3s ease-in-out; /* Smooth slide-in animation */
+  position: relative; /* For positioning the close button */
+}
+
+/* Input Fields: Stylish and modern */
+.form-control {
+  background: rgba(255, 255, 255, 0.1); /* Subtle background for input */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Soft border */
+  color: #fff; /* White text */
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  border-radius: 6px; /* Rounded corners */
+  transition: all 0.3s ease;
+}
+
+/* Focused Input Fields: Highlight with glow effect */
+.form-control:focus {
+  border-color: #4caf50; /* Green focus border */
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.7); /* Glow effect */
+  outline: none;
+  background-color: transparent;
+  color: white;
+}
+
+/* Spacing for form groups */
+.mb-5 {
+  margin-bottom: 20px; /* Larger spacing for better structure */
+}
+
+/* Placeholder text */
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6); /* Slightly transparent placeholder */
+}
+/* Custom styles for the select element */
+.custom-select {
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Soft border */
+  color: #fff; /* White text */
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  border-radius: 6px; /* Rounded corners */
+  transition: all 0.3s ease;
+  cursor: pointer;
+  appearance: none; /* Remove default arrow */
+}
+
+/* On focus */
+.custom-select:focus {
+  border-color: #4caf50; /* Green focus border */
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.7); /* Glow effect */
+  outline: none;
+  background-color: transparent;
+  color: white;
+}
+
+/* Placeholder (for the first option) */
+.custom-select option:first-child {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Custom styles for options */
+.custom-select option {
+  background: rgba(0, 0, 0, 0.8); /* Darker background for options */
+  color: #fff; /* White text */
+  padding: 10px;
+}
+
+/* Option hover effect */
+.custom-select option:hover {
+  background-color: rgba(76, 175, 80, 0.7); /* Green highlight */
+  color: #000; /* Black text */
+}
+
+/* Button Styles */
+.close {
+  background-color: rgba(255, 0, 0, 0.2); /* Light red background */
+  color: #ff4d4d; /* Bright red text */
+
+  border-radius: 20%;
+  cursor: pointer;
+}
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

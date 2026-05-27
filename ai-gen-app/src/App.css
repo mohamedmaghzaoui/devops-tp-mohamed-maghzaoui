@@ -1,0 +1,14 @@
+.initial-text {
+  color: #b2becd;
+}
+.main-content {
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(10, 13, 23, 0.05);
+  backdrop-filter: blur(
+    190px
+  ); /* Note: backdrop-filter has minimal browser support */
+  border-radius: 20px;
+  border-color: transparent !important;
+}
