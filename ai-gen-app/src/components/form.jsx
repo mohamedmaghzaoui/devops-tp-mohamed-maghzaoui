@@ -4,13 +4,14 @@ import { Popup } from './popup'
 import { MdEdit } from 'react-icons/md'
 import { IoIosAddCircleOutline } from 'react-icons/io'
 import { v4 as uuidv4 } from 'uuid'
+import { useGenerateJson } from '../hooks/useGenerateJson'
 
 export const Form = () => {
   const [fields, setFields] = useState([
     {
       id: uuidv4(),
-      name: 'user',
-      type: 'object',
+      name: 'username',
+      type: 'string',
       defaultValue: '',
       children: [],
     },
@@ -19,7 +20,7 @@ export const Form = () => {
   const [showPopUp, setshowPopUp] = useState(false)
   const [activeField, setActiveField] = useState(null)
 
-  // ================= POPUP =================
+  const { mutate, isPending } = useGenerateJson()
 
   const hidePopUp = () => setshowPopUp(false)
 
@@ -27,8 +28,6 @@ export const Form = () => {
     setActiveField(field)
     setshowPopUp(true)
   }
-
-  // ================= ADD FIELD (RECURSIVE) =================
 
   const addField = (parentId = null) => {
     const newField = {
@@ -52,92 +51,70 @@ export const Form = () => {
             children: [...item.children, newField],
           }
         }
-
-        return {
-          ...item,
-          children: addNested(item.children || []),
-        }
+        return { ...item, children: addNested(item.children || []) }
       })
 
     setFields((prev) => addNested(prev))
   }
 
-  // ================= UPDATE NAME =================
+  const deleteField = (id) => {
+    const remove = (items) =>
+      items
+        .filter((i) => i.id !== id)
+        .map((i) => ({
+          ...i,
+          children: remove(i.children || []),
+        }))
+
+    setFields((prev) => remove(prev))
+  }
 
   const handleFieldNameChange = (id, value) => {
     const update = (items) =>
-      items.map((item) => {
-        if (item.id === id) {
-          return { ...item, name: value }
-        }
-
-        return {
-          ...item,
-          children: update(item.children || []),
-        }
+      items.map((i) => {
+        if (i.id === id) return { ...i, name: value }
+        return { ...i, children: update(i.children || []) }
       })
 
     setFields((prev) => update(prev))
   }
 
-  // ================= UPDATE POPUP DATA =================
-
   const updateFieldData = (data) => {
     const update = (items) =>
-      items.map((item) => {
-        if (item.id === activeField.id) {
-          return { ...item, ...data }
-        }
-
-        return {
-          ...item,
-          children: update(item.children || []),
-        }
+      items.map((i) => {
+        if (i.id === activeField.id) return { ...i, ...data }
+        return { ...i, children: update(i.children || []) }
       })
 
     setFields((prev) => update(prev))
     hidePopUp()
   }
 
-  // ================= GENERATE JSON (FIXED) =================
+  const buildSchema = (fields) =>
+    fields.map((f) => ({
+      name: f.name,
+      type: f.type,
+      format: f.format,
+      regex: f.regex,
+      children: buildSchema(f.children || []),
+    }))
 
-  const generateJson = (fields) => {
-    const result = {}
-
-    fields.forEach((field) => {
-      const key = field.name || 'unnamed'
-
-      if (field.type === 'object') {
-        result[key] = generateJson(field.children || [])
-      } else if (field.type === 'array') {
-        result[key] = [generateJson(field.children || [])]
-      } else if (field.type === 'string') {
-        result[key] = field.defaultValue || ''
-      } else if (field.type === 'number') {
-        result[key] = Number(field.defaultValue || 0)
-      } else if (field.type === 'boolean') {
-        result[key] = field.defaultValue === 'true'
-      } else if (field.type === 'null') {
-        result[key] = null
-      } else {
-        result[key] = field.defaultValue || null
-      }
+  const handleGenerate = () => {
+    mutate({
+      schema: buildSchema(fields),
+      count: 10,
     })
-
-    return result
   }
 
-  // ================= RENDER FIELDS =================
-
-  const renderFields = (fields, nested = false) => {
-    return fields.map((field) => (
+  const renderFields = (fields, nested = false) =>
+    fields.map((field) => (
       <div key={field.id} className={`field-card ${nested ? 'ms-4' : ''}`}>
         <div className="d-flex align-items-center gap-2">
           <input
             className="field-input"
-            placeholder="field name"
             value={field.name}
             onChange={(e) => handleFieldNameChange(field.id, e.target.value)}
+            placeholder="field name"
           />
 
           <span className="badge-type">{field.type}</span>
@@ -149,6 +126,13 @@ export const Form = () => {
           <button className="icon-btn" onClick={() => addField(field.id)}>
             <IoIosAddCircleOutline />
           </button>
+
+          <button
+            className="icon-btn text-danger"
+            onClick={() => deleteField(field.id)}
+          >
+            🗑
+          </button>
         </div>
 
         {field.children.length > 0 && (
@@ -156,13 +140,9 @@ export const Form = () => {
         )}
       </div>
     ))
-  }
-
-  // ================= UI =================
 
   return (
     <div className="app-container">
-      {/* BUILDER */}
       <div className="builder-zone">
         <div className="header">
           <h4>Schema Builder</h4>
@@ -174,18 +154,12 @@ export const Form = () => {
         <button className="add-btn" onClick={() => addField()}>
           + Add Root Field
         </button>
+
+        <button className="add-btn" onClick={handleGenerate}>
+          {isPending ? 'Generating...' : 'Generate JSON'}
+        </button>
       </div>
 
-      {/* PREVIEW */}
-      {/* <div className="preview-zone">
-        <h5>JSON Preview</h5>
-
-        <div className="preview-box">
-          <pre>{JSON.stringify(generateJson(fields), null, 2)}</pre>
-        </div>
-      </div> */}
-
-      {/* POPUP */}
       {showPopUp && (
         <Popup
           field={activeField}
