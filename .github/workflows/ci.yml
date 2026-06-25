@@ -10,28 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: data_generator/package-lock.json
 
       - name: Install dependencies
-        working-directory: data_generator
-        run: npm ci
+        working-directory: ai-gen-app
+        run: npm install
 
       - name: Lint
-        working-directory: data_generator
+        working-directory: ai-gen-app
         run: npm run lint
 
       - name: Test
-        working-directory: data_generator
+        working-directory: ai-gen-app
         run: npm test
 
       - name: Build
-        working-directory: data_generator
+        working-directory: ai-gen-app
         run: npm run build
