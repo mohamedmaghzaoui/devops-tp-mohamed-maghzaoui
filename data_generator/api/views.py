@@ -1,74 +1,91 @@
-# views.py
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.shortcuts import render
+import json
 
 from django.conf import settings
-import json
-from django.views.decorators.csrf import csrf_exempt
-#gemeni ai api
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 import google.generativeai as genai
-# open ai ai api
-# import openai
-# from openai import OpenAI
-# client = OpenAI(api_key=settings.OPENAI_API_KEY)
-# Home view
-def home(request):
-    return JsonResponse({"message": "Welcome to the Data Generator API!"})
 
-# JSON data generation view
-@csrf_exempt
-def generate_json_data(request):
-    if request.method == "POST":
-        try:
-            # Parse the JSON body of the request
-            data = json.loads(request.body)
-            
-            # Extract the 'prompt' field
-            prompt = data.get("prompt")
-            
-            if not prompt:
-                return HttpResponseBadRequest("No prompt provided")
-            # gemini
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            response = model.generate_content(prompt)
-            # open ai
-#             response = client.chat.completions.create(
-#     model="gpt-3.5-turbo",
-#     messages=[
-#         {"role": "system", "content": "You are a helpful assistant."},
-#         {
-#             "role": "user",
-#             "content": prompt
-#         }
-#     ]
-# )
-            
-            
-            
-            
-
-            # Extract the generated text from the OpenAI response
-            generated_text = response.text
-            
-
-            # return a JSON response
-            try:
-                generated_data = json.loads(generated_text)
-                return JsonResponse(generated_data)
-            except json.JSONDecodeError:
-                return HttpResponseBadRequest(generated_data)
-
-        except json.JSONDecodeError:
-            return HttpResponseBadRequest("Invalid JSON format")
-    else:
-        return HttpResponseBadRequest("Invalid request method")
+from .models import GeneratedJson
+from .serializers import GeneratedJsonSerializer
+from .prompt_builder import build_prompt
 
 
+# GEMINI CONFIG 
+genai.configure(api_key=settings.GEMINI_API_KEY)
+
+model = genai.GenerativeModel("models/gemini-3.1-flash-lite")
+for m in genai.list_models():
+    print(m.name)
+
+# health endpoint
+@api_view(["GET"])
+def health(request):
+    return Response({"status": "ok"})
 
 
+# list
+@api_view(["GET"])
+def list_generations(request):
+    data = GeneratedJson.objects.order_by("-created_at")
+    serializer = GeneratedJsonSerializer(data, many=True)
+    return Response(serializer.data)
 
-def health_check(request):
-    return JsonResponse({
-        "status": "ok"
-    })
+
+# generate new json data
+@api_view(["POST"])
+def generate(request):
+
+    schema = request.data.get("schema", [])
+    count = request.data.get("count", 10)
+
+    if not schema:
+        return Response(
+            {"error": "schema required"},
+            status=400
+        )
+
+    prompt = build_prompt(schema, count)
+
+    try:
+        response = model.generate_content(
+            f"""
+Return ONLY valid JSON.
+No markdown.
+No explanation.
+No text.
+
+{prompt}
+"""
+        )
+
+        raw = response.text.strip()
+
+        # clean Gemini 
+        raw = raw.replace("```json", "").replace("```", "").strip()
+
+        result = json.loads(raw)
+
+        saved = GeneratedJson.objects.create(
+    prompt=prompt,
+    generated_data=result   
+)
+
+        return Response(
+            GeneratedJsonSerializer(saved).data
+        )
+
+    except json.JSONDecodeError:
+        return Response(
+            {
+                "error": "Invalid JSON from Gemini",
+                "raw": raw
+            },
+            status=400
+        )
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=500
+        )

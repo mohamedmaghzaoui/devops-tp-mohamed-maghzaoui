@@ -1,80 +1,79 @@
-// Sample JSON data
+import { useQuery } from '@tanstack/react-query'
 
-import { mockJsonData } from '../mocks/JsonData'
-
-// Recursive function to render the JSON data
-const renderJson = (data) => {
-  if (typeof data === 'object' && !Array.isArray(data)) {
-    return (
-      <div style={{ paddingLeft: '20px' }}>
-        <span style={{ color: '#A6E22E' }}>{'{'}</span>
-        <div style={{ paddingLeft: '20px' }}>
-          {Object.keys(data).map((key, index, array) => (
-            <div key={key}>
-              <span style={{ color: '#A6E22E' }}>"{key}"</span>
-              <span style={{ color: 'white' }}>{' : '}</span>
-              {renderJson(data[key])}
-              {index < array.length - 1 && (
-                <span style={{ color: 'white' }}>{','}</span>
-              )}
-            </div>
-          ))}
-        </div>
-        <span style={{ color: '#A6E22E' }}>{'}'}</span>
-      </div>
-    )
-  }
-
-  if (Array.isArray(data)) {
-    return (
-      <div style={{ paddingLeft: '20px' }}>
-        <span style={{ color: '#A6E22E' }}>{'['}</span>
-        <div style={{ paddingLeft: '20px' }}>
-          {data.map((item, index, array) => (
-            <div key={index}>
-              {renderJson(item)}
-              {index < array.length - 1 && (
-                <span style={{ color: 'white' }}>{','}</span>
-              )}
-            </div>
-          ))}
-        </div>
-        <span style={{ color: '#A6E22E' }}>{']'}</span>
-      </div>
-    )
-  }
-
-  // For string values
-  if (typeof data === 'string') {
-    return <span style={{ color: 'orange' }}>"{data}"</span>
-  }
-
-  // For number values
-  if (typeof data === 'number') {
-    return <span style={{ color: 'red' }}>{data}</span>
-  }
-
-  // For boolean values
-  if (typeof data === 'boolean') {
-    return <span style={{ color: 'purple' }}>{data ? 'true' : 'false'}</span>
-  }
-
-  return <span>{data}</span>
-}
-
-// Main component
 export const Data = () => {
+  const { data: jsonData } = useQuery({
+    queryKey: ['generated-json'],
+    queryFn: () => null,
+  })
+
+  const { data: loading } = useQuery({
+    queryKey: ['loading'],
+    queryFn: () => null,
+  })
+
+  const renderJson = (data) => {
+    if (!data) return null
+
+    if (typeof data === 'object' && !Array.isArray(data)) {
+      return (
+        <div style={{ paddingLeft: '20px' }}>
+          <span style={{ color: '#A6E22E' }}>{'{'}</span>
+          <div style={{ paddingLeft: '20px' }}>
+            {Object.keys(data).map((key, i, arr) => (
+              <div key={key}>
+                <span style={{ color: '#A6E22E' }}>"{key}"</span>
+                <span> : </span>
+                {renderJson(data[key])}
+                {i < arr.length - 1 && <span>,</span>}
+              </div>
+            ))}
+          </div>
+          <span style={{ color: '#A6E22E' }}>{'}'}</span>
+        </div>
+      )
+    }
+
+    if (Array.isArray(data)) {
+      return (
+        <div style={{ paddingLeft: '20px' }}>
+          <span style={{ color: '#A6E22E' }}>{'['}</span>
+          <div style={{ paddingLeft: '20px' }}>
+            {data.map((item, i) => (
+              <div key={i}>{renderJson(item)}</div>
+            ))}
+          </div>
+          <span style={{ color: '#A6E22E' }}>{']'}</span>
+        </div>
+      )
+    }
+
+    if (typeof data === 'string') return <span>"{data}"</span>
+    if (typeof data === 'number') return <span>{data}</span>
+    if (typeof data === 'boolean') return <span>{String(data)}</span>
+
+    return <span>{String(data)}</span>
+  }
+
   return (
     <div
       style={{
-        margin: '20px',
-        backgroundColor: '#1e1e1e',
-        padding: '10px',
-        borderRadius: '8px',
+        margin: 20,
+        background: '#1e1e1e',
+        padding: 10,
+        borderRadius: 8,
       }}
     >
-      <h2 style={{ color: 'white' }}>JSON example</h2>
-      {renderJson(mockJsonData)}
+      <h2 style={{ color: 'white' }}>JSON :</h2>
+
+      {loading && <p style={{ color: 'yellow' }}>Generating...</p>}
+
+      {!loading &&
+        jsonData?.generated_data &&
+        renderJson(jsonData.generated_data)}
+
+      {!loading && !jsonData?.generated_data && (
+        <p style={{ color: 'gray' }}>No generated data yet</p>
+      )}
     </div>
   )
 }
