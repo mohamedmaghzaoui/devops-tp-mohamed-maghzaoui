@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: data_generator/package-lock.json
+
+      - name: Install dependencies
+        working-directory: data_generator
+        run: npm ci
+
+      - name: Lint
+        working-directory: data_generator
+        run: npm run lint
+
+      - name: Test
+        working-directory: data_generator
+        run: npm test
+
+      - name: Build
+        working-directory: data_generator
+        run: npm run build
