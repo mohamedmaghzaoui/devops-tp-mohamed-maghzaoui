@@ -1,9 +1,21 @@
 // popup.jsx
 
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import './popup.css'
 
 export const Popup = ({ field, hidePopUp, updateFieldData }) => {
+  Popup.propTypes = {
+    field: PropTypes.shape({
+      type: PropTypes.string,
+      required: PropTypes.bool,
+      defaultValue: PropTypes.string,
+      format: PropTypes.string,
+      regex: PropTypes.string,
+    }).isRequired,
+    hidePopUp: PropTypes.func.isRequired,
+    updateFieldData: PropTypes.func.isRequired,
+  }
   const [formData, setFormData] = useState({
     type: field.type || 'string',
     required: field.required || false,

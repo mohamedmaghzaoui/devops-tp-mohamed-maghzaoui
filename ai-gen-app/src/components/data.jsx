@@ -21,7 +21,7 @@ export const Data = () => {
           <div style={{ paddingLeft: '20px' }}>
             {Object.keys(data).map((key, i, arr) => (
               <div key={key}>
-                <span style={{ color: '#A6E22E' }}>"{key}"</span>
+                <span style={{ color: '#A6E22E' }}>&quot;{key}&quot;</span>
                 <span> : </span>
                 {renderJson(data[key])}
                 {i < arr.length - 1 && <span>,</span>}
@@ -47,7 +47,7 @@ export const Data = () => {
       )
     }
 
-    if (typeof data === 'string') return <span>"{data}"</span>
+    if (typeof data === 'string') return <span>&quot;{data}&quot;</span>
     if (typeof data === 'number') return <span>{data}</span>
     if (typeof data === 'boolean') return <span>{String(data)}</span>
 
