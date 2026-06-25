@@ -73,7 +73,7 @@ export const Data = () => {
         borderRadius: '8px',
       }}
     >
-      <h2 style={{ color: 'white' }}>JSON :</h2>
+      <h2 style={{ color: 'white' }}>JSON example</h2>
       {renderJson(mockJsonData)}
     </div>
   )
