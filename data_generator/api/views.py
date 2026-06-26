@@ -14,6 +14,7 @@ from .prompt_builder import build_prompt
 # GEMINI CONFIG 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
+#todo delete this
 model = genai.GenerativeModel("models/gemini-3.1-flash-lite")
 for m in genai.list_models():
     print(m.name)
