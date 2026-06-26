@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { test, expect, vi, beforeEach } from 'vitest';
-import { Form } from '../../src/components/Form';
+import { Form } from '../../src/components/form';
 
 const mutateMock = vi.fn();
 
