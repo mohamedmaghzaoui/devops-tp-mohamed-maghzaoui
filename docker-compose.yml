@@ -1,0 +1,8 @@
+services:
+  backend:
+    build: ./data_generator
+    ports:
+      - "8000:8000"
+    env_file: ./data_generator/.env
+    volumes:
+      - ./data_generator:/app
